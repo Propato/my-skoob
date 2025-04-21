@@ -1,0 +1,6 @@
+[submodule "my-skoob-frontend"]
+	path = my-skoob-frontend
+	url = https://github.com/Propato/my-skoob-frontend.git
+[submodule "my-skoob-backend"]
+	path = my-skoob-backend
+	url = https://github.com/Propato/my-skoob-backend.git
