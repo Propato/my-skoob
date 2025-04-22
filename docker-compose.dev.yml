@@ -1,0 +1,74 @@
+services:
+  # FRONTEND - Vue.js
+  skoob-frontend:
+    build: .
+    container_name: skoob-frontend
+    command: ["npm", "run", "dev"]
+    volumes:
+      - ./my-skoob-frontend/src:/app/src
+      # - ./my-skoob-frontend/public:/app/public
+    ports:
+      - "3000:3000"
+    env_file:
+      - ./.env
+    networks:
+      - skoob-network
+    depends_on:
+      - skoob-backend
+
+  # BACKEND - Django
+  skoob-backend:
+    build: ./my-skoob-backend/app
+    container_name: skoob-backend
+    command: ["runserver", "0.0.0.0:4000"]
+    volumes:
+      - ./my-skoob-backend/app:/app
+      - ./my-skoob-backend/data/web/static:/data/web/static/
+    ports:
+      - "4000:4000"
+    env_file:
+      - ./.env
+    networks:
+      - skoob-network
+    depends_on:
+      - skoob-psql
+
+  # DATABASE - PostgreSQL
+  skoob-psql:
+    image: postgres:13-alpine
+    container_name: skoob-psql
+    volumes:
+      - ./my-skoob-backend/data/postgres/data:/var/lib/postgresql/data/
+    env_file:
+      - ./.env
+    ports:
+      - "5432:5432"
+    networks:
+      - skoob-network
+
+  # pgadmin: # Falta configurar dentro do pgadmin -> https://www.youtube.com/watch?v=qECVC6t_2mU
+  #   container_name: pgadmin
+  #   image: dpage/pgadmin4
+  #   environment:
+  #     PGADMIN_DEFAULT_EMAIL: admin@admin.com
+  #     PGADMIN_DEFAULT_PASSWORD: admin
+  #   ports:
+  #     - "8888:80"
+  #     - "5050:5050"
+  #   depends_on:
+  #     - psql
+
+  # adminer:
+  #   container_name: adminer
+  #   image: adminer:latest
+  #   environment:
+  #     - ADMINER_DEFAULT_SERVER=psql
+  #   ports:
+  #     - "4040:4000"
+  #   depends_on:
+  #     - psql
+
+# Global network declaration
+networks:
+  skoob-network:
+    driver: bridge
